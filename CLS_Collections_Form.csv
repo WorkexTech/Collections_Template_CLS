@@ -1,1 +1,359 @@
-Area,Location,Tech Identification No,Equipment Name,Asset Number,Grease Type,Number of Pumps,Service Interval (days),Service Notes
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Digital Task Map - Greasing Template</title>
+<style>
+  :root{
+    --brand:#1f6fb5; --ink:#1c1c1c; --muted:#6b7280; --line:#e5e7eb; --bg:#f5f6f8; --chip:#f59e0b;
+    --radius:14px; --red:#ef4444; --blue:#3b82f6; --green:#10b981; --orange:#f97316; --yellow:#eab308;
+  }
+  body{margin:0;background:var(--bg);font:16px/1.4 system-ui, -apple-system, Segoe UI, Roboto, Arial}
+  .wrap{max-width:860px;margin:28px auto;padding:0 14px}
+  .card{background:#fff;border-radius:var(--radius);box-shadow:0 6px 20px rgba(0,0,0,.06);overflow:hidden;margin-bottom:20px}
+  .card-header{background:var(--brand);color:#fff;padding:16px 18px}
+  .subtitle{opacity:.9;font-size:.95rem;margin-top:4px}
+  .form-section{padding:20px}
+  .form-group{margin-bottom:20px}
+  .form-group label{display:block;font-weight:600;margin-bottom:8px;color:var(--ink)}
+  .form-group select, .form-group input, .form-group textarea{width:100%;padding:12px;border:1px solid var(--line);border-radius:8px;font-size:14px}
+  .form-group select:focus, .form-group input:focus, .form-group textarea:focus{outline:none;border-color:var(--brand);box-shadow:0 0 0 3px rgba(31,111,181,0.1)}
+  .color-coded{padding:4px 8px;border-radius:6px;color:white;font-weight:600;font-size:0.85em}
+  .red{background:var(--red)}
+  .blue{background:var(--blue)}
+  .green{background:var(--green)}
+  .orange{background:var(--orange)}
+  .yellow{background:var(--yellow);color:var(--ink)}
+  .accordion{border:1px solid var(--line);border-radius:10px;overflow:hidden;margin-bottom:15px}
+  .accordion-header{background:#f8fafc;padding:15px;cursor:pointer;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center}
+  .accordion-header:hover{background:#f1f5f9}
+  .accordion-content{display:none;padding:15px}
+  .accordion-content.active{display:block}
+  .accordion-icon{transition:transform 0.3s ease}
+  .accordion-header.active .accordion-icon{transform:rotate(180deg)}
+  .sub-locations{margin-left:20px;margin-top:10px}
+  .sub-locations label{font-size:14px;font-weight:normal;margin:5px 0}
+  .photo-upload{border:2px dashed var(--line);border-radius:10px;padding:40px;text-align:center;background:#f9fafb}
+  .photo-upload:hover{border-color:var(--brand);background:#f0f4f9}
+  .btn{padding:12px 24px;background:var(--brand);color:white;border:none;border-radius:8px;font-weight:600;cursor:pointer}
+  .btn:hover{background:#1553a0}
+  .calculator{background:#f0f9ff;border:1px solid #bae6fd;border-radius:8px;padding:15px;margin-top:10px}
+  .calc-row{display:flex;gap:10px;align-items:center;margin:5px 0}
+  .calc-input{width:80px;padding:6px;border:1px solid #cbd5e1;border-radius:4px}
+  .result{font-weight:600;color:var(--brand)}
+  @media (max-width:720px){
+    .calc-row{flex-direction:column;align-items:stretch}
+    .calc-input{width:100%;margin:5px 0}
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <div class="card-header">
+        <h2 style="margin:0">Digital Task Map - Greasing Template</h2>
+        <div class="subtitle">
+          <div>Create New Greasing Task</div>
+          <div>Fill out the form below to generate a maintenance report</div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <!-- Area Selection -->
+        <div class="form-group">
+          <label><span class="color-coded red">1. Area</span></label>
+          <select id="area" onchange="updateLocations()">
+            <option value="">Select Area</option>
+            <option value="forming">Forming</option>
+            <option value="baking">Baking</option>
+            <option value="packaging">Packaging</option>
+            <option value="warehouse">Warehouse</option>
+            <option value="tradewaste">Trade Waste</option>
+            <option value="plantroom">Plant Room</option>
+            <option value="arrivals">Arrivals/Dispatch</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+
+        <!-- Forming Sub-areas -->
+        <div class="accordion" id="forming-accordion" style="display:none">
+          <div class="accordion-header" onclick="toggleAccordion(this)">
+            <span>Forming Sub-Areas</span>
+            <span class="accordion-icon">▼</span>
+          </div>
+          <div class="accordion-content">
+            <div class="form-group">
+              <label>Select Sub-Area:</label>
+              <select id="forming-subarea" onchange="updateSubLocations()">
+                <option value="">Select Sub-Area</option>
+                <option value="bulkgoods">Bulk Goods</option>
+                <option value="fermentation">Fermentation</option>
+                <option value="millingroom">Milling Room</option>
+                <option value="vitawheat">Vita Wheat Room</option>
+                <option value="mixing">Mixing</option>
+                <option value="accumulator">Accumulator</option>
+                <option value="laminator">Laminator</option>
+                <option value="gaugerollers">Gauge Rollers</option>
+                <option value="combiconveyors">Combi Conveyors</option>
+                <option value="transferwebs">Transfer Webs</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Baking Sub-areas -->
+        <div class="accordion" id="baking-accordion" style="display:none">
+          <div class="accordion-header" onclick="toggleAccordion(this)">
+            <span>Baking Sub-Areas</span>
+            <span class="accordion-icon">▼</span>
+          </div>
+          <div class="accordion-content">
+            <div class="form-group">
+              <label>Select Sub-Area:</label>
+              <select id="baking-subarea" onchange="updateSubLocations()">
+                <option value="">Select Sub-Area</option>
+                <option value="oven">Oven</option>
+                <option value="oilroom">Oil Room</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Location Selection -->
+        <div class="form-group">
+          <label><span class="color-coded blue">2. Location</span></label>
+          <select id="location">
+            <option value="">First select an area above</option>
+          </select>
+          <div class="sub-locations" id="sub-locations" style="display:none"></div>
+        </div>
+
+        <!-- Equipment Details -->
+        <div class="form-group">
+          <label><span class="color-coded green">3. Equipment Details</span></label>
+          <p style="font-size:14px;color:var(--muted);margin:5px 0"><strong>NOTE:</strong> Only yellow labels</p>
+          
+          <div style="margin-bottom:10px">
+            <label>Tech Identification No:</label>
+            <input type="text" id="tech-id" placeholder="E.g. 5102_COND1840">
+          </div>
+          
+          <div style="margin-bottom:10px">
+            <label>Equipment Name:</label>
+            <input type="text" id="equipment-name" placeholder="E.g. CONVEYOR, PACKET: 05D FLEXLINK SPIRAL L5">
+          </div>
+          
+          <div style="margin-bottom:10px">
+            <label>Asset Number:</label>
+            <input type="text" id="asset-number" placeholder="E.g. 10070994">
+          </div>
+        </div>
+
+        <!-- Photo Upload -->
+        <div class="form-group">
+          <label><span class="color-coded orange">4. Equipment Photo</span></label>
+          <div class="photo-upload" onclick="document.getElementById('photo').click()">
+            <input type="file" id="photo" accept="image/*" style="display:none" onchange="handlePhoto(this)">
+            <p>📷 Click to upload equipment nameplate photo</p>
+            <p style="font-size:14px;color:var(--muted)">Take photo of nameplate for OCR processing</p>
+          </div>
+          <div id="photo-preview" style="margin-top:10px"></div>
+        </div>
+
+        <!-- Grease Type -->
+        <div class="form-group">
+          <label><span class="color-coded yellow">5. Grease Type</span></label>
+          <select id="grease-type">
+            <option value="">Select Grease Type</option>
+            <option value="generic">Generic Food Grade Grease (White)</option>
+            <option value="highpressure">High Pressure Grease (Brown)</option>
+            <option value="molykote">Molykote 44 Grease High Temp (Oven)</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+
+        <!-- Service Details -->
+        <div class="form-group">
+          <label><span class="color-coded yellow">6. Number of Pumps</span></label>
+          <input type="number" id="pumps" min="1" max="10" placeholder="Enter number of pumps" onchange="calculateVolume()">
+        </div>
+
+        <div class="form-group">
+          <label><span class="color-coded yellow">7. Service Interval</span></label>
+          <select id="interval">
+            <option value="">Select Interval</option>
+            <option value="30">30 days</option>
+            <option value="60">60 days</option>
+            <option value="90">90 days</option>
+            <option value="120">120 days</option>
+            <option value="180">180 days</option>
+            <option value="365">365 days</option>
+          </select>
+        </div>
+
+        <!-- Volume Calculator -->
+        <div class="form-group">
+          <label><span class="color-coded yellow">8. Volume Calculator</span></label>
+          <div class="calculator">
+            <div class="calc-row">
+              <span>Number of pumps:</span>
+              <input type="number" id="calc-pumps" class="calc-input" onchange="calculateVolume()" readonly>
+              <span>× 3 grams = </span>
+              <span id="total-grams" class="result">0 grams</span>
+            </div>
+            <div class="calc-row">
+              <span>Volume in ml:</span>
+              <span id="total-ml" class="result">0 ml</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Service Notes -->
+        <div class="form-group">
+          <label><span class="color-coded yellow">9. Service Notes</span></label>
+          <textarea id="service-notes" rows="4" placeholder="Enter technical notes about the equipment, access requirements, safety considerations, etc."></textarea>
+        </div>
+
+        <button class="btn" onclick="generateReport()">Generate Greasing Report</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+  const locationOptions = {
+    forming: {
+      bulkgoods: ['Sifter', 'Compressor Room', 'Silos', 'Switch Board Room', 'Other'],
+      fermentation: ['Ground Level', 'First Level', 'Second Level'],
+      millingroom: ['Other'],
+      vitawheat: ['Mixer', 'Extruder', 'Incline Conveyor'],
+      mixing: ['Line 1', 'Line 2', 'Line 3', 'Line 4', 'Line 5', 'Other'],
+      accumulator: ['Line 1', 'Line 2', 'Line 3', 'Line 4', 'Line 5', 'Other'],
+      laminator: ['Line 1', 'Line 2', 'Line 4', 'Other'],
+      gaugerollers: ['Line 1', 'Line 2', 'Line 3', 'Line 4', 'Line 5', 'Other'],
+      combiconveyors: ['Other'],
+      transferwebs: ['Line 1', 'Line 2', 'Line 3', 'Line 4', 'Line 5', 'Other']
+    },
+    baking: {
+      oven: ['Line 1', 'Line 2', 'Line 3', 'Line 4', 'Line 5'],
+      oilroom: ['Other']
+    },
+    packaging: ['Enter location'],
+    warehouse: ['Enter location'],
+    tradewaste: ['Enter location'],
+    plantroom: ['Enter location'],
+    arrivals: ['Enter location'],
+    other: ['Enter location']
+  };
+
+  function updateLocations() {
+    const area = document.getElementById('area').value;
+    const locationSelect = document.getElementById('location');
+    
+    // Hide all accordions
+    document.getElementById('forming-accordion').style.display = 'none';
+    document.getElementById('baking-accordion').style.display = 'none';
+    
+    locationSelect.innerHTML = '<option value="">Select Location</option>';
+    
+    if (area === 'forming') {
+      document.getElementById('forming-accordion').style.display = 'block';
+    } else if (area === 'baking') {
+      document.getElementById('baking-accordion').style.display = 'block';
+    } else if (area && locationOptions[area]) {
+      locationOptions[area].forEach(location => {
+        locationSelect.innerHTML += `<option value="${location}">${location}</option>`;
+      });
+    }
+  }
+
+  function updateSubLocations() {
+    const area = document.getElementById('area').value;
+    const subarea = area === 'forming' 
+      ? document.getElementById('forming-subarea').value 
+      : document.getElementById('baking-subarea').value;
+    const locationSelect = document.getElementById('location');
+    
+    locationSelect.innerHTML = '<option value="">Select Location</option>';
+    
+    if (subarea && locationOptions[area] && locationOptions[area][subarea]) {
+      locationOptions[area][subarea].forEach(location => {
+        locationSelect.innerHTML += `<option value="${location}">${location}</option>`;
+      });
+      
+      // Show roller number input for gauge rollers
+      if (subarea === 'gaugerollers') {
+        document.getElementById('sub-locations').innerHTML = `
+          <label>Roller Number:</label>
+          <input type="number" min="1" max="5" placeholder="Enter roller number (1-5)">
+        `;
+        document.getElementById('sub-locations').style.display = 'block';
+      } else {
+        document.getElementById('sub-locations').style.display = 'none';
+      }
+    }
+  }
+
+  function toggleAccordion(header) {
+    const content = header.nextElementSibling;
+    const icon = header.querySelector('.accordion-icon');
+    
+    if (content.classList.contains('active')) {
+      content.classList.remove('active');
+      header.classList.remove('active');
+    } else {
+      content.classList.add('active');
+      header.classList.add('active');
+    }
+  }
+
+  function calculateVolume() {
+    const pumps = document.getElementById('pumps').value || 0;
+    document.getElementById('calc-pumps').value = pumps;
+    
+    const grams = pumps * 3;
+    const ml = grams; // 1 gram ≈ 1 ml for grease
+    
+    document.getElementById('total-grams').textContent = grams + ' grams';
+    document.getElementById('total-ml').textContent = ml + ' ml';
+  }
+
+  function handlePhoto(input) {
+    if (input.files && input.files[0]) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        document.getElementById('photo-preview').innerHTML = `
+          <img src="${e.target.result}" style="max-width:200px;border-radius:8px;border:1px solid var(--line)">
+          <p style="font-size:14px;color:var(--muted)">Photo uploaded successfully</p>
+        `;
+      };
+      reader.readAsDataURL(input.files[0]);
+    }
+  }
+
+  function generateReport() {
+    // Collect form data
+    const formData = {
+      area: document.getElementById('area').value,
+      location: document.getElementById('location').value,
+      techId: document.getElementById('tech-id').value,
+      equipmentName: document.getElementById('equipment-name').value,
+      assetNumber: document.getElementById('asset-number').value,
+      greaseType: document.getElementById('grease-type').value,
+      pumps: document.getElementById('pumps').value,
+      interval: document.getElementById('interval').value,
+      serviceNotes: document.getElementById('service-notes').value
+    };
+    
+    // Validate required fields
+    if (!formData.area || !formData.location || !formData.equipmentName) {
+      alert('Please fill in all required fields: Area, Location, and Equipment Name');
+      return;
+    }
+    
+    alert('Report generated successfully! In a real application, this would create a new maintenance report and add it to your digital task map system.');
+  }
+</script>
+</body>
+</html>
